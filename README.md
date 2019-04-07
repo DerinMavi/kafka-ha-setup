@@ -4,6 +4,7 @@ I created 3 VMs(running ubuntu) on Google cloud(I choose Google because I have f
 ```
 gcloud compute --project=caner-playground instances create instance-1 --zone=europe-north1-a --machine-type=n1-standard-1 --subnet=default --network-tier=PREMIUM --maintenance-policy=MIGRATE --no-service-account --no-scopes --image=ubuntu-1810-cosmic-v20190402 --image-project=ubuntu-os-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name=instance-1
 ```
+![00](https://github.com/DerinMavi/kafka-ha-setup/blob/master/images/00.png)
 
 Then for each VM I installed java and vi editor:
 ```
@@ -135,10 +136,21 @@ sudo systemctl start kafka
 ```
 
 # Testing
-I created a test topic with replication-factor 3 --partitions 10:
+I created a test topic with replication-factor 3 and 10 partitions:
 `~/kafka/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 3 --partitions 10 --topic test-topic`
 
 Checking everything works correctly:
 `~/kafka/bin/kafka-topics.sh --describe --topic test-topic --zookeeper localhost:2181`
 
-![alt text](https://github.com/DerinMavi/kafka-ha-setup/blob/master/images/01.png)
+![01](https://github.com/DerinMavi/kafka-ha-setup/blob/master/images/01.png)
+
+Start listeners on every instance:
+```~/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic --from-beginning```
+
+Published some test messages:
+```echo "Hello, World" | ~/kafka/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test-topic > /dev/null```
+
+I was able to get the published messages on all servers:
+![02](https://github.com/DerinMavi/kafka-ha-setup/blob/master/images/02.png)
+
+
