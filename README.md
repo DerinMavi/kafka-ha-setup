@@ -60,3 +60,85 @@ server.3=10.166.0.4:2888:3888
 ```
 
 # Creating services
+I created systemd services to start kafka and zookeper automatiacally on reboot
+### Zookeper service
+Create the configuration:
+```
+sudo vi /etc/systemd/system/zookeeper.service
+```
+
+I used the following configuration for the zookeper service:
+```
+[Unit]
+Description=Zookeeper Daemon
+Requires=network-online.target
+After=network-online.target
+[Service]
+Type=forking
+User=kafka
+# the directory that the commands will run there   
+WorkingDirectory=/home/kafka/zookeeper
+ExecStart=/home/kafka/zookeeper/bin/zkServer.sh start /home/kafka/zookeeper/conf/zoo.cfg
+ExecStop=/home/kafka/zookeeper/bin/zkServer.sh stop /home/kafka/zookeeper/conf/zoo.cfg
+ExecReload=/home/kafka/zookeeper/bin/zkServer.sh restart /home/kafka/zookeeper/conf/zoo.cfg
+Restart=on-abnormal
+[Install]
+WantedBy=multi-user.target
+```
+
+Enable and run the service andn check its status: 
+```
+sudo systemctl enable zookeeper
+sudo systemctl start zookeeper
+/home/kafka/zookeeper/bin/zkServer.sh status
+```
+
+### Kafka service
+Create the configuration:
+`sudo vi /etc/systemd/system/kafka.service`
+
+I used the following configuration for the kafka service:
+```
+[Unit]
+Description=Kafka Daemon
+Wants=syslog.target
+
+# suppose you have a service named zookeeper that it start zookeeper and we want Kafka service run after the zookeeper service
+After=zookeeper.service
+
+[Service]    
+Type=forking
+
+# the user whom you want run the Kafka start and stop command under
+User=kafka
+
+# the directory that the commands will run there   
+WorkingDirectory=/home/kafka/kafka 
+
+# Kafka server start command
+ExecStart=/home/kafka/kafka/bin/kafka-server-start.sh -daemon /home/kafka/kafka/config/server.properties
+
+# Kafka server stop command
+ExecStop=/home/kafka/kafka/bin/kafka-server-stop.sh -daemon
+
+TimeoutSec=30
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Enable and run the service:
+```
+sudo systemctl enable kafka
+sudo systemctl start kafka
+```
+
+# Testing
+I created a test topic with replication-factor 3 --partitions 10:
+`~/kafka/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 3 --partitions 10 --topic test-topic`
+
+Checking everything works correctly:
+`~/kafka/bin/kafka-topics.sh --describe --topic test-topic --zookeeper localhost:2181`
+
+![alt text](https://github.com/DerinMavi/kafka-ha-setup/blob/master/images/01.png)
