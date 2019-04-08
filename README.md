@@ -137,20 +137,37 @@ sudo systemctl start kafka
 
 # Testing
 I created a test topic with replication-factor 3 and 10 partitions:
-`~/kafka/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 3 --partitions 10 --topic test-topic`
+```
+~/kafka/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 3 --partitions 10 --topic test-topic
+```
 
 Checking everything works correctly:
-`~/kafka/bin/kafka-topics.sh --describe --topic test-topic --zookeeper localhost:2181`
+```
+~/kafka/bin/kafka-topics.sh --describe --topic test-topic --zookeeper localhost:2181
+```
 
 ![01](https://github.com/DerinMavi/kafka-ha-setup/blob/master/images/01.png)
 
-Start listeners on every instance:
-```~/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic --from-beginning```
+Started listeners on every instance:
+```
+~/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic --from-beginning
+```
 
 Published some test messages:
-```echo "Hello, World" | ~/kafka/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test-topic > /dev/null```
+```
+echo "Hello, World" | ~/kafka/bin/kafka-console-producer.sh --broker-list localhost:9092 --topic test-topic > /dev/null
+```
 
 I was able to get the published messages on all servers:
 ![02](https://github.com/DerinMavi/kafka-ha-setup/blob/master/images/02.png)
 
+
+Next I shutdown instance-2:
+![03](https://github.com/DerinMavi/kafka-ha-setup/blob/master/images/03.png)
+
+We can see some partitions lost their leader and failed over to 1 & 3 here:
+![04](https://github.com/DerinMavi/kafka-ha-setup/blob/master/images/04.png)
+
+Next I send "HA Works!" message and it is received by instance 1 & 3:
+![05](https://github.com/DerinMavi/kafka-ha-setup/blob/master/images/05.png)
 
