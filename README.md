@@ -40,6 +40,8 @@ Set the ip addresses of my zookeeper servers:
 Enabled topic deletion to be able to create/delete some test topics:
 `delete.topic.enable=true`
 
+See the config file here: https://github.com/DerinMavi/kafka-ha-setup/blob/master/configs/server.properties
+
 # Zookeeper configuration
 Download, extract and configured zookeeper:
 ```
@@ -59,6 +61,7 @@ server.1=10.166.0.2:2888:3888
 server.2=10.166.0.3:2888:3888
 server.3=10.166.0.4:2888:3888
 ```
+See the config file here: https://github.com/DerinMavi/kafka-ha-setup/blob/master/configs/zoo.cfg
 
 # Creating services
 I created systemd services to start kafka and zookeper automatiacally on reboot
@@ -68,7 +71,7 @@ Create the configuration:
 sudo vi /etc/systemd/system/zookeeper.service
 ```
 
-I used the following configuration for the zookeper service:
+I used the following configuration for the zookeper service(https://github.com/DerinMavi/kafka-ha-setup/blob/master/configs/zookeeper.service):
 ```
 [Unit]
 Description=Zookeeper Daemon
@@ -98,7 +101,7 @@ sudo systemctl start zookeeper
 Create the configuration:
 `sudo vi /etc/systemd/system/kafka.service`
 
-I used the following configuration for the kafka service:
+I used the following configuration for the kafka service(https://github.com/DerinMavi/kafka-ha-setup/blob/master/configs/kafka.service):
 ```
 [Unit]
 Description=Kafka Daemon
