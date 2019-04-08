@@ -174,3 +174,7 @@ We can see some partitions lost their leader and failed over to 1 & 3 here:
 Next I send "HA Works!" message and it is received by instance 1 & 3:
 ![05](https://github.com/DerinMavi/kafka-ha-setup/blob/master/images/05.png)
 
+# Things could be done
+- Load balancer should be added to distribute the traffic between brokers
+- VMs could be in different locations for higher availability
+- Zookeepers could be on different VMs
