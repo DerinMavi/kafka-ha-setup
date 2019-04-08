@@ -1,0 +1,15 @@
+[Unit]
+Description=Zookeeper Daemon
+Requires=network-online.target
+After=network-online.target
+[Service]
+Type=forking
+User=kafka
+# the directory that the commands will run there   
+WorkingDirectory=/home/kafka/zookeeper
+ExecStart=/home/kafka/zookeeper/bin/zkServer.sh start /home/kafka/zookeeper/conf/zoo.cfg
+ExecStop=/home/kafka/zookeeper/bin/zkServer.sh stop /home/kafka/zookeeper/conf/zoo.cfg
+ExecReload=/home/kafka/zookeeper/bin/zkServer.sh restart /home/kafka/zookeeper/conf/zoo.cfg
+Restart=on-abnormal
+[Install]
+WantedBy=multi-user.target

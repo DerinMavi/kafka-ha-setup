@@ -1,0 +1,27 @@
+[Unit]
+Description=Kafka Daemon
+Wants=syslog.target
+
+# suppose you have a service named zookeeper that it start zookeeper and we want Kafka service run after the zookeeper service
+After=zookeeper.service
+
+[Service]    
+Type=forking
+
+# the user whom you want run the Kafka start and stop command under
+User=kafka
+
+# the directory that the commands will run there   
+WorkingDirectory=/home/kafka/kafka 
+
+# Kafka server start command
+ExecStart=/home/kafka/kafka/bin/kafka-server-start.sh -daemon /home/kafka/kafka/config/server.properties
+
+# Kafka server stop command
+ExecStop=/home/kafka/kafka/bin/kafka-server-stop.sh -daemon
+
+TimeoutSec=30
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
